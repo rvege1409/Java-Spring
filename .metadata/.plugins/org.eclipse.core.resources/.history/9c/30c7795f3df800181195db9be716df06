@@ -1,7 +1,0 @@
-package com.javalec.ex;
-
-public class Pencil4B implements Pencil{
-	public void use() {
-		
-	}
-}
