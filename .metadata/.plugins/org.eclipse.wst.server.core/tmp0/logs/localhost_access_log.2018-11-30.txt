@@ -1,0 +1,2 @@
+127.0.0.1 - - [30/Nov/2018:11:56:14 +0900] "GET / HTTP/1.1" 404 1074
+0:0:0:0:0:0:0:1 - - [30/Nov/2018:11:56:14 +0900] "GET /controller/WEB-INF/classes/com/javalec/ex/MainClass.java HTTP/1.1" 404 1047
