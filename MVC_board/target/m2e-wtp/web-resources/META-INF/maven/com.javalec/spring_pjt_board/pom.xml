@@ -109,7 +109,7 @@
 			<version>1.2</version>
 		</dependency>
 	
-	<!--  dB  -->
+	<!--  dB & JDBC Template -->
 	<dependency>
 		<groupId>org.springframework</groupId>
 		<artifactId>spring-jdbc</artifactId>

@@ -38,7 +38,7 @@ public class BController {
 		return "write_view";
 	}
 	
-	@RequestMapping("/write") // 작성한 글의 form 데이터를 받기 위해 , 작성 하는 작업
+	@RequestMapping(method = RequestMethod.POST, value="/write") // 작성한 글의 form 데이터를 받기 위해 , 작성 하는 작업
 	public String write(HttpServletRequest request, Model model) {
 		System.out.println("write()");
 		

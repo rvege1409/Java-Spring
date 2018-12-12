@@ -9,8 +9,11 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 
 import org.springframework.context.annotation.Configuration;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 import com.javalec.spring_pjt_board.dto.BDto;
+import com.javalec.spring_pjt_board.util.Constant;
 
 import java.sql.DriverManager;
 import java.security.Timestamp;
@@ -21,61 +24,48 @@ import java.sql.PreparedStatement;
 
 
 public class BDao {
-	private static final String DRIVER = "com.mysql.jdbc.Driver";
-	private static final String URL = "jdbc:mysql://127.0.0.1:3306/mydb?useSSL=false";
-	private static final String USER ="root";
-	private static final String PW = "ckddn123";
+	
+	public JdbcTemplate template =null;
 	
 	public BDao() {
-		
-		/*Class.forName(DRIVER);
-		try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost/mydb, USER, PW")){
-			System.out.println(conn);
-		}
-		catch(Exception e){
-			e.printStackTrace();
-		}*/
+		template = Constant.template;
 	}
-	public ArrayList <BDto> list() {
-		//database 접근해서 가져오기
-		ArrayList<BDto> dtos = new ArrayList<BDto>();
+	
+	public BDto contentView(String strbId) {
+		
+		//upHit(strID); 조회수 올리는 Dao 메서드
+		String query = "select * from mvc_board where bId = ?";
+		return template.queryForObject(query, new BeanPropertyRowMapper<BDto>(BDto.class));
+	}
+	public void write(String bName, String bTitle, String bContent) {
 		Connection connection = null;
-		PreparedStatement ps = null;
+		PreparedStatement psmt = null;
 		ResultSet resultSet = null;
 		
 		try {
-			connection = DriverManager.getConnection(URL, USER, PW);
-			String query = "select bid, bName, bTitle, bContent, bDate, bHit, bGroup, bStep, bIntent from mvc_board order by bGroup desc, bStep asc";
-			ps = connection.prepareStatement(query);
-			resultSet = ps.executeQuery();
 			
-			while(resultSet.next()) {
-				int bId = resultSet.getInt("bId");
-				String bName=resultSet.getString("bName");
-				String bTitle=resultSet.getString("bTitle");
-				String bContent=resultSet.getString("bContent");
-				java.sql.Timestamp bDate = resultSet.getTimestamp("bDate");
-				int bHit=resultSet.getInt("bId");
-				int bGroup=resultSet.getInt("bId");
-				int bStep=resultSet.getInt("bId");
-				int bIndent=resultSet.getInt("bId");
-				BDto dto = new BDto(bId,bName,bContent,bTitle,bDate,bHit,bGroup,bStep,bIndent);
-				dtos.add(dto);
-			}
-		}
-		catch(Exception e) {
+			connection = DriverManager.getConnection(URL, USER, PW);
+			String query = "insert into mvc_board(bName,bTitle, bContent,bHit,bGroup,bStep, bIndent) values(?,?,?,0,0,0,0)";
+			psmt = connection.prepareStatement(query);
+			psmt.setString(1, bName);
+			psmt.setString(2, bTitle);
+			psmt.setString(3, bContent);
+			int rn=psmt.executeUpdate();			
+		}catch(Exception e){
 			e.printStackTrace();
-		}finally {
+		}finally{
 			try {
-			if(resultSet!=null) resultSet.close();
-			if(ps!=null) ps.close();
-			if(connection != null) connection.close();
+				if(psmt!=null) psmt.close();
+				if(connection!=null) connection.close();
 			}
-			catch (Exception e) {
-				
+			catch (Exception e2) {
+				e2.printStackTrace();
 			}
 		}
-		
-		return dtos;
+	}
+	
+	public ArrayList <BDto> list() {
+		String query = "select bId, bName,bTitle, bContent, bDate, bHit, bGroup, bStep, bIndent from mvc_board";
+		return (ArrayList<BDto>)template.query(query, new BeanPropertyRowMapper<BDto>(BDto.class));
 	}
 }
